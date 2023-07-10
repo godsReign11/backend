@@ -4,7 +4,7 @@ var multer = require("multer");
 var upload = multer();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-// const userRoutes = require('./routes/userRoutes');
+const dashRoutes = require('./routes/dashboard/routes');
 // const config = require('config');
 
 const PORT = 8080;
@@ -27,7 +27,7 @@ mongoOptions = {
     useUnifiedTopology: true,
 };
 
-mongoose.connect('mongodb+srv://op24lark:2424lark@cluster0.mldekxu.mongodb.net/OP', mongoOptions).then(() => {
+mongoose.connect('mongodb+srv://tech:6kzXMli9DKC0MnHs@cluster0.9tochqx.mongodb.net/GRTech', mongoOptions).then(() => {
     console.log('mongoDb connected!');
     app.emit('mongoConnected');
 })
@@ -36,23 +36,8 @@ mongoose.connect('mongodb+srv://op24lark:2424lark@cluster0.mldekxu.mongodb.net/O
     });
 
 
-// app.use('/api/auth', userRoutes);
+app.use('/api/auth', dashRoutes);
 
-// Error middleware
-app.use((err, req, res, next) => {
-    if (['production', 'staging'].includes(process.env.NODE_ENV)) {
-        apm.captureError(err);
-    }
-    console.error('Error in app', err);
-    const errorStatus = err.status || 500;
-    const errorMessage = err.message || 'Something Went Wrong';
-    res.status(errorStatus).json({
-        success: false,
-        message: errorMessage,
-        status_code: errorStatus,
-        debug: err.stack,
-    });
-});
 
 // Listen on `port` and 0.0.0.0
 app.listen(PORT, "0.0.0.0", function () {
