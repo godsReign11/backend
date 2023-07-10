@@ -5,6 +5,8 @@ var upload = multer();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const dashRoutes = require('./routes/dashboard/routes');
+const appRoutes = require('./routes/app/appRoutes');
+
 // const config = require('config');
 
 const PORT = 8080;
@@ -37,6 +39,7 @@ mongoose.connect('mongodb+srv://tech:6kzXMli9DKC0MnHs@cluster0.9tochqx.mongodb.n
 
 
 app.use('/api/auth', dashRoutes);
+app.use('/api/auth', appRoutes);
 
 
 // Listen on `port` and 0.0.0.0
