@@ -260,6 +260,78 @@ const verifyOtp = async (req, res) => {
     })
 }
 
+const forgotPassword = async (req, res) => {
+    const { verifyKey, oldPassword, newPassword, cPassword } = req.body;
+    if (!verifyKey) {
+        return res.send({
+            message: "Please provide a key for forgot password!",
+            status: false
+        })
+    }
+    if (!oldPassword || !newPassword || !cPassword) {
+        return res.send({
+            message: "Please provide old password and new password both!",
+            status: false,
+        })
+    }
+    if (newPassword !== cPassword) {
+        return res.send({
+            message: "Please provide password and confirm password same!",
+            status: false
+        })
+    }
+    const userKey = verifyKey.includes('@') || verifyKey.includes('.');
+    if (userKey) {
+        email = verifyKey;
+        if (email.length > parseInt(process.env.REGISTER_EMAIL_LENGTH)) {
+            return res.send({
+                message: "Email must be less than 50 characters!",
+                status: false
+            })
+        }
+        const findwithEmail = await user.findOne({ email });
+        if (!findwithEmail) {
+            return res.send({
+                message: "This email doesn't exist!",
+                status: false
+            })
+        }
+        if (findwithEmail.password !== oldPassword) {
+            return res.send({
+                message: "Old Password doesn't match!",
+                status: false
+            })
+        }
+        await user.updateOne({ _id: findwithEmail._id }, { $set: { password: newPassword } });
+    } else {
+        phone = loginKey;
+        if (phone.length !== parseInt(process.env.REGISTER_PHONE_LENGTH)) {
+            return res.send({
+                message: "Error in number!",
+                status: false
+            })
+        }
+        const findwithPhone = await user.findOne({ phone });
+        if (!findwithPhone) {
+            return res.send({
+                message: "This number doesn't exist!",
+                status: false
+            })
+        }
+        if (findwithPhone.password !== oldPassword) {
+            return res.send({
+                message: "Old Password doesn't match!",
+                status: false
+            })
+        }
+        await user.updateOne({ _id: findwithPhone._id }, { $set: { password: newPassword } });
+    }
+    res.send({
+        message: "New password updated successfully!",
+        status: true
+    })
+}
+
 module.exports = {
-    userRegister, passwordLogin, otpLogin, verifyOtp
+    userRegister, passwordLogin, otpLogin, verifyOtp, forgotPassword
 }
