@@ -16,13 +16,14 @@ const formData = require('express-form-data');
 
 app.use(cors());
 app.use(express.static(`${process.cwd()}/images`));
+app.use(express.json())
 app.use('/images', express.static(`${process.cwd()}/images`));
 app.use(bodyParser.json({ limit: '50mb', }));
 app.use(bodyParser.urlencoded({
     limit: '50mb',
     extended: true,
 }));
-// app.use(formData.parse());
+app.use(formData.parse());
 app.use(express.static('public'));
 
 mongoOptions = {
