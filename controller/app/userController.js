@@ -124,6 +124,56 @@ const passwordLogin = async (req, res) => {
     })
 }
 
+const otpLogin = async (req, res) => {
+    const { loginKey } = req.body;
+    if (!loginKey) {
+        return res.send({
+            message: "Please provide a key to login with!",
+            status: false
+        })
+    }
+    const userKey = loginKey.includes('@') || loginKey.includes('.');
+    if (userKey) {
+        email = loginKey;
+        if (email.length > parseInt(process.env.REGISTER_EMAIL_LENGTH)) {
+            return res.send({
+                message: "Email must be less than 50 characters!",
+                status: false
+            })
+        }
+        const findwithEmail = await user.findOne({ email });
+        if (!findwithEmail) {
+            return res.send({
+                message: "This email doesn't exist!",
+                status: false
+            })
+        }
+        res.send({
+            message: "OTP sent to your email, Please check!",
+            status: true
+        })
+    } else {
+        phone = loginKey;
+        if (phone.length !== parseInt(process.env.REGISTER_PHONE_LENGTH)) {
+            return res.send({
+                message: "Error in number!",
+                status: false
+            })
+        }
+        const findwithPhone = await user.findOne({ phone });
+        if (!findwithPhone) {
+            return res.send({
+                message: "This number doesn't exist!",
+                status: false
+            })
+        }
+        res.send({
+            message: "OTP sent to your phone, Please check!",
+            status: true
+        })
+    }
+}
+
 module.exports = {
-    userRegister, passwordLogin
+    userRegister, passwordLogin, otpLogin
 }
