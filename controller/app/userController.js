@@ -125,7 +125,7 @@ const passwordLogin = async (req, res) => {
     })
 }
 
-const otpLogin = async (req, res) => {
+const sentOtp = async (req, res) => {
     const { loginKey } = req.body;
     if (!loginKey) {
         return res.send({
@@ -255,12 +255,72 @@ const verifyOtp = async (req, res) => {
         }
     }
     res.send({
-        message: "User login Approved!",
+        message: "User OTP Verified!",
         status: true
     })
 }
 
 const forgotPassword = async (req, res) => {
+    const { verifyKey, newPassword, cPassword } = req.body;
+    if (!verifyKey) {
+        return res.send({
+            message: "Please provide a key for forgot password!",
+            status: false
+        })
+    }
+    if (!newPassword || !cPassword) {
+        return res.send({
+            message: "Please provide both password!",
+            status: false,
+        })
+    }
+    if (newPassword !== cPassword) {
+        return res.send({
+            message: "Please provide password and confirm password same!",
+            status: false
+        })
+    }
+    const userKey = verifyKey.includes('@') || verifyKey.includes('.');
+    if (userKey) {
+        email = verifyKey;
+        if (email.length > parseInt(process.env.REGISTER_EMAIL_LENGTH)) {
+            return res.send({
+                message: "Email must be less than 50 characters!",
+                status: false
+            })
+        }
+        const findwithEmail = await user.findOne({ email });
+        if (!findwithEmail) {
+            return res.send({
+                message: "This email doesn't exist!",
+                status: false
+            })
+        }
+        await user.updateOne({ _id: findwithEmail._id }, { $set: { password: newPassword } });
+    } else {
+        phone = verifyKey;
+        if (phone.length !== parseInt(process.env.REGISTER_PHONE_LENGTH)) {
+            return res.send({
+                message: "Error in number!",
+                status: false
+            })
+        }
+        const findwithPhone = await user.findOne({ phone });
+        if (!findwithPhone) {
+            return res.send({
+                message: "This number doesn't exist!",
+                status: false
+            })
+        }
+        await user.updateOne({ _id: findwithPhone._id }, { $set: { password: newPassword } });
+    }
+    res.send({
+        message: "New password updated successfully!",
+        status: true
+    })
+}
+
+const resetPassword = async (req, res) => {
     const { verifyKey, oldPassword, newPassword, cPassword } = req.body;
     if (!verifyKey) {
         return res.send({
@@ -304,7 +364,7 @@ const forgotPassword = async (req, res) => {
         }
         await user.updateOne({ _id: findwithEmail._id }, { $set: { password: newPassword } });
     } else {
-        phone = loginKey;
+        phone = verifyKey;
         if (phone.length !== parseInt(process.env.REGISTER_PHONE_LENGTH)) {
             return res.send({
                 message: "Error in number!",
@@ -333,5 +393,5 @@ const forgotPassword = async (req, res) => {
 }
 
 module.exports = {
-    userRegister, passwordLogin, otpLogin, verifyOtp, forgotPassword
+    userRegister, passwordLogin, sentOtp, verifyOtp, forgotPassword, resetPassword
 }
