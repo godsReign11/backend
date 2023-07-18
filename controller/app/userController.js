@@ -2,7 +2,13 @@ const user = require('../../models/app/userModel');
 const appotp = require('../../models/app/appotp');
 
 const userRegister = async (req, res) => {
-    const { registerKey, password, cPassword } = req.body;
+    const { userName, registerKey, password, cPassword } = req.body;
+    if (!userName) {
+        return res.send({
+            message: "Please provide userName!",
+            status: false
+        })
+    }
     if (!registerKey) {
         return res.send({
             message: "Please provide a key to register with!",
@@ -37,7 +43,7 @@ const userRegister = async (req, res) => {
                 status: false
             })
         }
-        await user.create({ email, password });
+        await user.create({ userName: userName.replaceAll(" ", ""), email, password });
     } else {
         phone = registerKey;
         if (phone.length !== parseInt(process.env.REGISTER_PHONE_LENGTH)) {
@@ -53,7 +59,7 @@ const userRegister = async (req, res) => {
                 status: false
             })
         }
-        await user.create({ phone, password });
+        await user.create({ userName: userName.replaceAll(" ", ""), phone, password });
     }
     res.send({
         message: "User registered Successfully!",
@@ -178,7 +184,7 @@ const sentOtp = async (req, res) => {
     }
 }
 
-const verifyOtp = async (req, res) => {
+const verifyRegisterOtp = async (req, res) => {
     const { loginKey, otp } = req.body;
     if (!loginKey) {
         return res.send({
@@ -209,7 +215,6 @@ const verifyOtp = async (req, res) => {
             })
         }
         const emailOtp = await appotp.findOne({ email, description: "Email Register OTP!" });
-        console.log("emailOtp: ", emailOtp);
         if (!emailOtp) {
             return res.send({
                 message: "Invalid OTP!",
@@ -223,6 +228,7 @@ const verifyOtp = async (req, res) => {
                 status: false
             })
         }
+        await user.findOneAndUpdate({ email }, { $set: { isActive: true } });
     } else {
         phone = loginKey;
         if (phone.length !== parseInt(process.env.REGISTER_PHONE_LENGTH)) {
@@ -239,7 +245,6 @@ const verifyOtp = async (req, res) => {
             })
         }
         const phoneOtp = await appotp.findOne({ phone, description: "Phone Register OTP!" });
-        console.log("phoneOtp: ", phoneOtp);
         if (!phoneOtp) {
             return res.send({
                 message: "Invalid OTP!",
@@ -253,6 +258,7 @@ const verifyOtp = async (req, res) => {
                 status: false
             })
         }
+        await user.findOneAndUpdate({ phone }, { $set: { isActive: true } });
     }
     res.send({
         message: "User OTP Verified!",
@@ -393,5 +399,5 @@ const resetPassword = async (req, res) => {
 }
 
 module.exports = {
-    userRegister, passwordLogin, sentOtp, verifyOtp, forgotPassword, resetPassword
+    userRegister, passwordLogin, sentOtp, verifyRegisterOtp, forgotPassword, resetPassword
 }
