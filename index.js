@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({
     limit: '50mb',
     extended: true,
 }));
-app.use(formData.parse());
+// app.use(formData.parse());
 app.use(express.static('public'));
 
 mongoOptions = {
