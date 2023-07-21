@@ -1,8 +1,9 @@
 const user = require('../../models/app/userModel');
-const appotp = require('../../models/app/appotp');
+const appotp = require('../../models/app/appotpModel');
+const favouriteplayer = require('../../models/app/favouritePlayersModel');
 
 const userRegister = async (req, res) => {
-    const { userName, registerKey, password, cPassword } = req.body;
+    const { userName, registerKey, password, cPassword, favGamesId, favPlayersId } = req.body;
     if (!userName) {
         return res.send({
             message: "Please provide userName!",
@@ -28,6 +29,7 @@ const userRegister = async (req, res) => {
         })
     }
     const userKey = registerKey.includes('@') || registerKey.includes('.');
+    let userId;
     if (userKey) {
         email = registerKey;
         if (email.length > parseInt(process.env.REGISTER_EMAIL_LENGTH)) {
@@ -43,7 +45,8 @@ const userRegister = async (req, res) => {
                 status: false
             })
         }
-        await user.create({ userName: userName.replaceAll(" ", ""), email, password });
+        const userCreate = await user.create({ userName: userName.replaceAll(" ", ""), email, password });
+        userId = userCreate?._id;
     } else {
         phone = registerKey;
         if (phone.length !== parseInt(process.env.REGISTER_PHONE_LENGTH)) {
@@ -59,8 +62,10 @@ const userRegister = async (req, res) => {
                 status: false
             })
         }
-        await user.create({ userName: userName.replaceAll(" ", ""), phone, password });
+        const userCreate = await user.create({ userName: userName.replaceAll(" ", ""), phone, password });
+        userId = userCreate?._id;
     }
+    await favouriteplayer.create({ userId, favGamesId, favPlayersId })
     res.send({
         message: "User registered Successfully!",
         status: true
@@ -184,8 +189,8 @@ const sentOtp = async (req, res) => {
     }
 }
 
-const verifyRegisterOtp = async (req, res) => {
-    const { loginKey, otp } = req.body;
+const verifyOtp = async (req, res) => {
+    const { loginKey, otp, verifyType } = req.body;
     if (!loginKey) {
         return res.send({
             message: "Please provide a key to login with!",
@@ -228,7 +233,9 @@ const verifyRegisterOtp = async (req, res) => {
                 status: false
             })
         }
-        await user.findOneAndUpdate({ email }, { $set: { isActive: true } });
+        if (verifyType === "register") {
+            await user.findOneAndUpdate({ email }, { $set: { isActive: true } });
+        }
     } else {
         phone = loginKey;
         if (phone.length !== parseInt(process.env.REGISTER_PHONE_LENGTH)) {
@@ -258,7 +265,9 @@ const verifyRegisterOtp = async (req, res) => {
                 status: false
             })
         }
-        await user.findOneAndUpdate({ phone }, { $set: { isActive: true } });
+        if (verifyType === "register") {
+            await user.findOneAndUpdate({ phone }, { $set: { isActive: true } });
+        }
     }
     res.send({
         message: "User OTP Verified!",
@@ -399,5 +408,5 @@ const resetPassword = async (req, res) => {
 }
 
 module.exports = {
-    userRegister, passwordLogin, sentOtp, verifyRegisterOtp, forgotPassword, resetPassword
+    userRegister, passwordLogin, sentOtp, verifyOtp, forgotPassword, resetPassword
 }
