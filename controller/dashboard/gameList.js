@@ -2,8 +2,8 @@ const gameList=require('../../models/dashboard/gameList')
 
 const createGame=async function(req,res)
 {
-    const {gameUrl,name,order}=req.body;
-    await gameList.create(req.body)
+    const {name,order}=req.body;
+    await gameList.create({gameUrl:req.file.path,name,order})
     res.send({
         status_code:true,
         message:"game created successfully"

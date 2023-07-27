@@ -10,7 +10,7 @@ const createPlayer =async function(req,res)
     await playerList.create({playerName,
         playerShortName,
         gameCategory,
-        playerImage,
+        playerImage:req.file.path,
        order: parseInt(order)});
 
     res.send({

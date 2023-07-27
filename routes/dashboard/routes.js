@@ -10,11 +10,11 @@ const bannerController =require('../../controller/dashboard/banner')
 router.post('/createGame',upload.single('fileName'),gameListController.createGame)
 router.get('/getGames',gameListController.getGames)
 
-router.post('/createPlayer',playerListController.createPlayer)
+router.post('/createPlayer',upload.single('fileName'),playerListController.createPlayer)
 router.get('/getPlayerAll',playerListController.getPlayerAll)
 
 // createContest
-router.post('/createContest',contestListController.createContest)
+router.post('/createContest',upload.single('fileName'),contestListController.createContest)
 router.get('/getContest',contestListController.getContest)
 
 router.post('/createBanner',upload.single('fileName'),bannerController.createBanner)
