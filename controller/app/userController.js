@@ -10,6 +10,13 @@ const userRegister = async (req, res) => {
             status: false
         })
     }
+    const findUserName = await user.findOne({ userName: userName.replaceAll(" ", "") });
+    if (findUserName) {
+        return res.send({
+            message: "This username already in use!",
+            status: false
+        })
+    }
     if (!registerKey) {
         return res.send({
             message: "Please provide a key to register with!",
@@ -38,7 +45,7 @@ const userRegister = async (req, res) => {
                 status: false
             })
         }
-        const findwithEmail = await user.findOne({ email });
+        const findwithEmail = await user.findOne({ email, isActive: true });
         if (findwithEmail) {
             return res.send({
                 message: "This email is already in use!",
@@ -55,7 +62,7 @@ const userRegister = async (req, res) => {
                 status: false
             })
         }
-        const findwithPhone = await user.findOne({ phone });
+        const findwithPhone = await user.findOne({ phone, isActive: true });
         if (findwithPhone) {
             return res.send({
                 message: "This number is already in use!",
