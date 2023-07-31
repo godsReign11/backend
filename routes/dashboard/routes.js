@@ -14,7 +14,7 @@ router.post('/createPlayer',upload.single('fileName'),playerListController.creat
 router.get('/getPlayerAll',playerListController.getPlayerAll)
 
 // createContest
-router.post('/createContest',upload.single('fileName'),contestListController.createContest)
+router.post('/createContest',upload.array('fileName'),contestListController.createContest)
 router.get('/getContest',contestListController.getContest)
 
 router.post('/createBanner',upload.single('fileName'),bannerController.createBanner)

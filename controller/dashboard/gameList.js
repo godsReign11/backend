@@ -3,7 +3,22 @@ const gameList=require('../../models/dashboard/gameList')
 const createGame=async function(req,res)
 {
     const {name,order}=req.body;
-    await gameList.create({gameUrl:req.file.path,name,order})
+    const params = {
+        Bucket: 'gods-media', // bucket that we made earlier
+        Key: req.file.originalname, // Name of the image
+        Body: req.file.buffer, // Body which will contain the image in buffer format
+    };
+    s3.upload(params, async (error, data) => {
+        if (error) {
+          
+           return res.send({
+            status:false,
+            message:"something went wrong"
+           }); // if we get any error while uploading error message will be returned.
+        }
+           await gameList.create({gameUrl:data.Location,name,order:parseInt(order)})
+    });
+    
     res.send({
         status_code:true,
         message:"game created successfully"
