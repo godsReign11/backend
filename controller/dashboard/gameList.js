@@ -25,7 +25,7 @@ const createGame=async function(req,res)
     });
     
     res.send({
-        status_code:true,
+        status:true,
         message:"game created successfully"
     })
 }
@@ -34,7 +34,7 @@ const getGames =async function(req,res)
 {
     const data=await gameList.find();
     res.send({
-        status_code:true,
+        status:true,
         message:"sucess",
         data
     })
