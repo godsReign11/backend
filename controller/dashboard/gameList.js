@@ -1,5 +1,9 @@
 const gameList=require('../../models/dashboard/gameList')
-
+const AWS =require("aws-sdk");
+const s3 = new AWS.S3({
+    accessKeyId:"AKIAYQQR444W53XDGLNN" ,
+    secretAccessKey:"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",
+});
 const createGame=async function(req,res)
 {
     const {name,order}=req.body;
