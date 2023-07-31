@@ -14,7 +14,7 @@ const gameListSchema = new schema({
     },
     isActive:{
         type:Boolean,
-        default:false
+        default:true
     }
 }, { timestamps: true })
 
