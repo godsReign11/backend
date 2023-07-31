@@ -32,7 +32,7 @@ const createGame=async function(req,res)
 
 const getGames =async function(req,res)
 {
-    const data=await gameList.find();
+    const data=await gameList.find({isActive:true});
     res.send({
         status:true,
         message:"sucess",

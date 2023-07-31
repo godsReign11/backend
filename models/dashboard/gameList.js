@@ -11,6 +11,10 @@ const gameListSchema = new schema({
     },
     order:{
         type:Number
+    },
+    isActive:{
+        type:Boolean,
+        default:false
     }
 }, { timestamps: true })
 
