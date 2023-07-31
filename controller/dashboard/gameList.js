@@ -9,13 +9,14 @@ const createGame=async function(req,res)
         Body: req.file.buffer, // Body which will contain the image in buffer format
     };
     s3.upload(params, async (error, data) => {
+        console.log(data)
         if (error) {
-          
            return res.send({
             status:false,
             message:"something went wrong"
            }); // if we get any error while uploading error message will be returned.
         }
+        console.log(data.Location,name,parseInt(order))
            await gameList.create({gameUrl:data.Location,name,order:parseInt(order)})
     });
     
