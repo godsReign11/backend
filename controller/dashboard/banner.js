@@ -32,7 +32,7 @@ res.send({
 
 const getBanner =async function(req,res)
 {
-    var data =await banner.find();
+    var data =await banner.find({isActive:true});
     return res.send({
         status:true,
         data:data,
