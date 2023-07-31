@@ -1,10 +1,11 @@
 
 const express = require('express');
 const router = express.Router();
+const { upload } = require('../../middleware/multerFile')
 
 const userController = require('../../controller/app/userController');
 
-router.post('/userRegister', userController.userRegister);
+router.post('/userRegister', upload.single('fileName'), userController.userRegister);
 router.post('/passwordLogin', userController.passwordLogin);
 router.post('/sentOtp', userController.sentOtp);
 router.post('/verifyOtp', userController.verifyOtp);

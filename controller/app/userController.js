@@ -1,6 +1,14 @@
+const AWS = require("aws-sdk");
+
+
 const user = require('../../models/app/userModel');
 const appotp = require('../../models/app/appotpModel');
 const favouriteplayer = require('../../models/app/favouritePlayersModel');
+
+const s3 = new AWS.S3({
+    accessKeyId: "AKIAYQQR444W53XDGLNN",
+    secretAccessKey: "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",
+})
 
 const userRegister = async (req, res) => {
     const { userName, registerKey, password, cPassword, favGamesId, favPlayersId } = req.body;
@@ -37,6 +45,12 @@ const userRegister = async (req, res) => {
     }
     const userKey = registerKey.includes('@') || registerKey.includes('.');
     let userId;
+    const uploadParams = {
+        Bucket: 'gods-media',
+        Key: `userProfileImages/${userName.replaceAll(" ", "")}.png`,
+        Body: req.file.buffer,
+    };
+    const uploadedImage = await s3.upload(uploadParams).promise();
     if (userKey) {
         email = registerKey;
         if (email.length > parseInt(process.env.REGISTER_EMAIL_LENGTH)) {
@@ -52,7 +66,7 @@ const userRegister = async (req, res) => {
                 status: false
             })
         }
-        const userCreate = await user.create({ userName: userName.replaceAll(" ", ""), email, password });
+        const userCreate = await user.create({ userName: userName.replaceAll(" ", ""), email, password, profileImage: uploadedImage.Location || "" });
         userId = userCreate?._id;
     } else {
         phone = registerKey;
@@ -69,7 +83,7 @@ const userRegister = async (req, res) => {
                 status: false
             })
         }
-        const userCreate = await user.create({ userName: userName.replaceAll(" ", ""), phone, password });
+        const userCreate = await user.create({ userName: userName.replaceAll(" ", ""), phone, password, profileImage: uploadedImage.Location || "" });
         userId = userCreate?._id;
     }
     await favouriteplayer.create({ userId, favGamesId, favPlayersId })
