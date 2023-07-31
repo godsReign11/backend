@@ -29,9 +29,7 @@ const createPlayer =async function(req,res)
                 playerShortName,
                 gameCategory,
                 playerImage:data.Location,
-               order: parseInt(order)});
-    
-            
+               order: parseInt(order)});  
         });
     res.send({
         status:true,
