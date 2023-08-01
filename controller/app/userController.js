@@ -1,6 +1,5 @@
 const AWS = require("aws-sdk");
 
-
 const user = require('../../models/app/userModel');
 const appotp = require('../../models/app/appotpModel');
 const favouriteplayer = require('../../models/app/favouritePlayersModel');
@@ -45,12 +44,15 @@ const userRegister = async (req, res) => {
     }
     const userKey = registerKey.includes('@') || registerKey.includes('.');
     let userId;
-    const uploadParams = {
-        Bucket: 'gods-media',
-        Key: `userProfileImages/${userName.replaceAll(" ", "")}.png`,
-        Body: req.file.buffer,
-    };
-    const uploadedImage = await s3.upload(uploadParams).promise();
+    let uploadedImage;
+    if (req.file.buffer) {
+        const uploadParams = {
+            Bucket: 'gods-media',
+            Key: `userProfileImages/${userName.replaceAll(" ", "")}.png`,
+            Body: req.file.buffer,
+        };
+        uploadedImage = await s3.upload(uploadParams).promise();
+    }
     if (userKey) {
         email = registerKey;
         if (email.length > parseInt(process.env.REGISTER_EMAIL_LENGTH)) {
