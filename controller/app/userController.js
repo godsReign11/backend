@@ -45,7 +45,7 @@ const userRegister = async (req, res) => {
     const userKey = registerKey.includes('@') || registerKey.includes('.');
     let userId;
     let uploadedImage;
-    if (req.file.buffer) {
+    if (req.file?.buffer) {
         const uploadParams = {
             Bucket: 'gods-media',
             Key: `userProfileImages/${userName.replaceAll(" ", "")}.png`,
@@ -68,7 +68,7 @@ const userRegister = async (req, res) => {
                 status: false
             })
         }
-        const userCreate = await user.create({ userName: userName.replaceAll(" ", ""), email, password, profileImage: uploadedImage.Location || "" });
+        const userCreate = await user.create({ userName: userName.replaceAll(" ", ""), email, password, profileImage: uploadedImage?.Location || "" });
         userId = userCreate?._id;
     } else {
         phone = registerKey;
@@ -85,7 +85,7 @@ const userRegister = async (req, res) => {
                 status: false
             })
         }
-        const userCreate = await user.create({ userName: userName.replaceAll(" ", ""), phone, password, profileImage: uploadedImage.Location || "" });
+        const userCreate = await user.create({ userName: userName.replaceAll(" ", ""), phone, password, profileImage: uploadedImage?.Location || "" });
         userId = userCreate?._id;
     }
     await favouriteplayer.create({ userId, favGamesId, favPlayersId })
