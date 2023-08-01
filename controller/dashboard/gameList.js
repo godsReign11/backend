@@ -9,7 +9,7 @@ const createGame=async function(req,res)
     const {name,order}=req.body;
     const params = {
         Bucket: 'gods-media', // bucket that we made earlier
-        Key: req.file.originalname, // Name of the image
+        Key: req.file.name, // Name of the image
         Body: req.file.buffer, // Body which will contain the image in buffer format
     };
     s3.upload(params, async (error, data) => {

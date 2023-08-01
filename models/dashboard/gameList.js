@@ -10,7 +10,7 @@ const gameListSchema = new schema({
         type: String
     },
     order:{
-        type:Number
+        type:Number 
     },
     isActive:{
         type:Boolean,
