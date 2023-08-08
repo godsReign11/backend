@@ -7,7 +7,7 @@ const s3 = new AWS.S3({
 
 var createBanner =async function(req,res)
 {
-const {videoUrl,title,description} = req.body;
+const {videoUrl,title,description,shortDescription,audio,subtitle} = req.body;
 const params = {
     Bucket: 'gods-media', // bucket that we made earlier
     Key: req.file.originalname, // Name of the image
@@ -22,7 +22,7 @@ s3.upload(params, async (error, data) => {
         message:"something went wrong"
        }); // if we get any error while uploading error message will be returned.
     }
-    await banner.create({videoUrl,title,description,bannerUrl:data.Location})
+    await banner.create({videoUrl,title,shortDescription,audio,subtitle,description,bannerUrl:data.Location})
 });
 res.send({
     status:true,
