@@ -6,6 +6,7 @@ const gameListController = require('../../controller/dashboard/gameList')
 const playerListController = require('../../controller/dashboard/playerList')
 const contestListController = require('../../controller/dashboard/contest')
 const bannerController = require('../../controller/dashboard/banner')
+const userController = require('../../controller/dashboard/users')
 
 router.post('/createGame', upload.single('fileName'), gameListController.createGame)
 router.get('/getGames', gameListController.getGames)
@@ -19,5 +20,7 @@ router.get('/getContest', contestListController.getContest)
 
 router.post('/createBanner', upload.single('fileName'), bannerController.createBanner)
 router.get('/getBanner', bannerController.getBanner)
+
+router.get('/getUsers',userController.getUsers)
 
 module.exports = router;
