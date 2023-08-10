@@ -91,7 +91,8 @@ const userRegister = async (req, res) => {
     await favouriteplayer.create({ userId, favGamesId, favPlayersId })
     res.send({
         message: "User registered Successfully!",
-        status: true
+        status: true,
+        userId
     })
 };
 
@@ -110,6 +111,7 @@ const passwordLogin = async (req, res) => {
         })
     }
     const userKey = loginKey.includes('@') || loginKey.includes('.');
+    let userId;
     if (userKey) {
         email = loginKey;
         if (email.length > parseInt(process.env.REGISTER_EMAIL_LENGTH)) {
@@ -131,6 +133,7 @@ const passwordLogin = async (req, res) => {
                 status: false
             })
         }
+        userId = findwithEmail?._id;
     } else {
         phone = loginKey;
         if (phone.length !== parseInt(process.env.REGISTER_PHONE_LENGTH)) {
@@ -152,10 +155,12 @@ const passwordLogin = async (req, res) => {
                 status: false
             })
         }
+        userId = findwithPhone?._id;
     }
     res.send({
         message: "User login Approved!",
-        status: true
+        status: true,
+        userId
     })
 }
 
