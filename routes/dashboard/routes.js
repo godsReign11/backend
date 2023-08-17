@@ -10,6 +10,7 @@ const userController = require('../../controller/dashboard/users')
 
 router.post('/createGame', upload.single('fileName'), gameListController.createGame)
 router.get('/getGames', gameListController.getGames)
+router.get('/editGames',gameListController.editGames)
 
 router.post('/createPlayer', upload.single('fileName'), playerListController.createPlayer)
 router.get('/getPlayerAll', playerListController.getPlayerAll)
@@ -22,5 +23,6 @@ router.post('/createBanner', upload.single('fileName'), bannerController.createB
 router.get('/getBanner', bannerController.getBanner)
 
 router.get('/getUsers',userController.getUsers)
+
 
 module.exports = router;
