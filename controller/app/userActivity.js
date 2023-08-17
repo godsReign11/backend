@@ -40,4 +40,4 @@ var getUserWatchlist = async function(req,res)
         data:getData
     })
 }
-module.exports={storeUserDownloads,getUserDownloads}
+module.exports={storeUserDownloads,getUserDownloads,getUserWatchlist,storeUserWatchlist}
