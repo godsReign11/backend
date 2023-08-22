@@ -435,6 +435,48 @@ const resetPassword = async (req, res) => {
     })
 }
 
+const otp = async (req,res) => {
+    const {p} = req.body;
+    const ab = await sendOtpPhoneNumber(p);
+    console.log(ab)
+    res.send("OTP SENT.");
+}
+
+const sendOtpPhoneNumber = async (email) => {
+    var otp = 3456;
+    var email = `91${email}`;
+    var authkeyMsg91 = "401846AEjwSihvV64e4ed4dP1";
+    var template_idMsg = "64c25855d6fc050aeb1dc733"
+    const http = require('https');
+    const options = {
+        method: 'GET',
+        hostname: 'api.msg91.com',
+        port: null,
+        path: `/api/v5/otp?template_id=${template_idMsg}&mobile=${email}&authkey=${authkeyMsg91}&otp=${otp}`,
+        // 387507A1tInncp6421da8bP1,
+        // 64536453d6fc0503793d99c3
+        headers: {
+            'Content-Type': 'application/JSON',
+        },
+    };
+    const req = http.request(options, (res) => {
+        const chunks = [];
+        res.on('data', (chunk) => {
+            chunks.push(chunk);
+        });
+        res.on('end', () => {
+            const body = Buffer.concat(chunks);
+        });
+    });
+
+    req.write('{\n  "Param1": "value1",\n  "Param2": "value2",\n  "Param3": "value3"\n}');
+    req.end();
+    return ({
+        status: true,
+        otp,
+    });
+}
+
 module.exports = {
-    userRegister, passwordLogin, sentOtp, verifyOtp, forgotPassword, resetPassword
+    userRegister, passwordLogin, sentOtp, verifyOtp, forgotPassword, resetPassword, otp
 }
