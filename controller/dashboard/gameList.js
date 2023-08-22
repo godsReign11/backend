@@ -1,4 +1,5 @@
 const gameList=require('../../models/dashboard/gameList')
+const objectId = require('mongoose').objectId;
 const AWS =require("aws-sdk");
 const s3 = new AWS.S3({
     accessKeyId:"AKIAYQQR444W53XDGLNN" ,
@@ -40,7 +41,18 @@ const getGames =async function(req,res)
     })
 }
 
+const editGames = async function(req,res)
+{
+    const {userId,name,order} = req.body;
+    await gameList.updateOne({userId:objectId(userId)},{$set:{name:name,order:order}})
+    res.send({
+        status:true,
+        message:"success"
+    })
+}
+
 module.exports={
     createGame,
-    getGames
+    getGames,
+    editGames
 }

@@ -15,5 +15,8 @@ router.post('/resetPassword', userController.resetPassword);
 router.get('/otp', userController.otp);
 router.post('/storeUserDownloads',userActivityController.storeUserDownloads);
 router.get('/getUserDownloads',userActivityController.getUserDownloads)
+router.post('/storeUserWatchlist',userActivityController.storeUserWatchlist);
+router.get('/getUserwatchlist',userActivityController.getUserWatchlist)
+
 
 module.exports = router;
