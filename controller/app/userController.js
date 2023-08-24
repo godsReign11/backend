@@ -4,6 +4,7 @@ const user = require('../../models/app/userModel');
 const appotp = require('../../models/app/appotpModel');
 const favouriteplayer = require('../../models/app/favouritePlayersModel');
 const fetch = require('node-fetch');
+const { sendOtp } = require('../../services/otp');
 
 const s3 = new AWS.S3({
     accessKeyId: "AKIAYQQR444W53XDGLNN",
@@ -210,30 +211,9 @@ const sentOtp = async (req, res) => {
                 status: false
             })
         }
-        const http = require('https');
-        const options = {
-            method: 'GET',
-            hostname: 'api.msg91.com',
-            port: null,
-            path: `/api/v5/otp?template_id=64c258bed6fc0509641d2913&mobile=91${phone}&authkey=401846AEjwSihvV64e4ed4dP1&otp=${OTP}`,
-            // 387507A1tInncp6421da8bP1,
-            // 64536453d6fc0503793d99c3
-            headers: {
-                'Content-Type': 'application/JSON',
-            },
-        };
-        const req = http.request(options, (res) => {
-            const chunks = [];
-            res.on('data', (chunk) => {
-                chunks.push(chunk);
-            });
-            res.on('end', () => {
-                const body = Buffer.concat(chunks);
-            });
-        });
-        req.write('{\n  "Param1": "value1",\n  "Param2": "value2",\n  "Param3": "value3"\n}');
-        req.end();
-        await appotp.updateOne({ phone, description: "Phone Register OTP!" }, { otp: OTP }, { upsert: true });
+        const otpres = await sendOtp(phone, "register");
+        console.log(otpres);
+        await appotp.updateOne({ phone, description: "Phone Register OTP!" }, { otp: otpres.otp }, { upsert: true });
         res.send({
             message: `OTP sent to your phone, Please check!`,
             status: true
@@ -468,7 +448,7 @@ const sendOtpPhoneNumber = async (email) => {
         method: 'GET',
         hostname: 'api.msg91.com',
         port: null,
-        path: `/api/v5/otp?template_id=64c258bed6fc0509641d2913&mobile=918130731696&authkey=401846AEjwSihvV64e4ed4dP1&otp=${otp}`,
+        path: `/api/v5/otp?template_id=64c258bed6fc0509641d2913&mobile=918006387557&authkey=401846AEjwSihvV64e4ed4dP1&otp=${otp}`,
         // 387507A1tInncp6421da8bP1,
         // 64536453d6fc0503793d99c3
         headers: {
