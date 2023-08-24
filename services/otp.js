@@ -2,7 +2,7 @@ const axios = require('axios');
 const msg91AuthKey = "401846AEjwSihvV64e4ed4dP1";
 async function generateOTP() {
     // Generate a random 6-digit number
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otp = Math.floor(1000 + Math.random() * 9000).toString();
     return otp;
 }
 
