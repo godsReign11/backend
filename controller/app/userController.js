@@ -210,9 +210,32 @@ const sentOtp = async (req, res) => {
                 status: false
             })
         }
+        const http = require('https');
+        const options = {
+            method: 'GET',
+            hostname: 'api.msg91.com',
+            port: null,
+            path: `/api/v5/otp?template_id=64c258bed6fc0509641d2913&mobile=91${phone}&authkey=401846AEjwSihvV64e4ed4dP1&otp=${OTP}`,
+            // 387507A1tInncp6421da8bP1,
+            // 64536453d6fc0503793d99c3
+            headers: {
+                'Content-Type': 'application/JSON',
+            },
+        };
+        const req = http.request(options, (res) => {
+            const chunks = [];
+            res.on('data', (chunk) => {
+                chunks.push(chunk);
+            });
+            res.on('end', () => {
+                const body = Buffer.concat(chunks);
+            });
+        });
+        req.write('{\n  "Param1": "value1",\n  "Param2": "value2",\n  "Param3": "value3"\n}');
+        req.end();
         await appotp.updateOne({ phone, description: "Phone Register OTP!" }, { otp: OTP }, { upsert: true });
         res.send({
-            message: `OTP sent to your phone, Please check - ${OTP}!`,
+            message: `OTP sent to your phone, Please check!`,
             status: true
         })
     }
@@ -470,8 +493,8 @@ const sendOtpPhoneNumber = async (email) => {
     });
 };
 
-const otp = async (req,res) => {
-    const {p} = '7310042077';
+const otp = async (req, res) => {
+    const { p } = '7310042077';
     const ab = await sendOtpPhoneNumber(p);
     console.log(ab)
     res.send("OTP SENT.");
