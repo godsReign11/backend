@@ -435,22 +435,43 @@ const resetPassword = async (req, res) => {
         status: true
     })
 }
+
 const sendOtpPhoneNumber = async (email) => {
-    var authkeyMsg91 = "401846AEjwSihvV64e4ed4dP1";
-    var template_idMsg = "64c25855d6fc050aeb1dc733"
-    const tokenURL = `https://control.msg91.com/api/v5/otp?authkey=401846AEjwSihvV64e4ed4dP1&template_id=1207169045230741772&mobile=917310042077&DLT_id=`;
-        const options = { method: 'POST', headers: { accept: 'application/json' } };
-        await fetch(tokenURL, options)
-            .then((res) => res.json())
-            .then(async (json) => {
-                console.log(json)
-                return
-            })
-      
-}
+    var otp = 123456;
+    console.log("inside")
+    var email = `91${email}`;
+    const http = require('https');
+    const options = {
+        method: 'GET',
+        hostname: 'api.msg91.com',
+        port: null,
+        path: `/api/v5/otp?template_id=64c258bed6fc0509641d2913&mobile=918130731696&authkey=401846AEjwSihvV64e4ed4dP1&otp=${otp}`,
+        // 387507A1tInncp6421da8bP1,
+        // 64536453d6fc0503793d99c3
+        headers: {
+            'Content-Type': 'application/JSON',
+        },
+    };
+    const req = http.request(options, (res) => {
+        const chunks = [];
+        res.on('data', (chunk) => {
+            chunks.push(chunk);
+        });
+        res.on('end', () => {
+            const body = Buffer.concat(chunks);
+            console.log(body)
+        });
+    });
+    req.write('{\n  "Param1": "value1",\n  "Param2": "value2",\n  "Param3": "value3"\n}');
+    req.end();
+    return ({
+        status: true,
+        otp,
+    });
+};
 
 const otp = async (req,res) => {
-    const {p} = req.body;
+    const {p} = '7310042077';
     const ab = await sendOtpPhoneNumber(p);
     console.log(ab)
     res.send("OTP SENT.");
