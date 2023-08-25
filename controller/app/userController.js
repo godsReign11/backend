@@ -4,12 +4,12 @@ const user = require('../../models/app/userModel');
 const appotp = require('../../models/app/appotpModel');
 const favouriteplayer = require('../../models/app/favouritePlayersModel');
 const fetch = require('node-fetch');
-const { sendOtp } = require('../../services/otp');
+const { sentPhoneOtp } = require('../../services/otp');
 
 const s3 = new AWS.S3({
     accessKeyId: "AKIAYQQR444W53XDGLNN",
     secretAccessKey: "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",
-})
+});
 
 const userRegister = async (req, res) => {
     const { userName, registerKey, password, cPassword, favGamesId, favPlayersId } = req.body;
@@ -22,7 +22,7 @@ const userRegister = async (req, res) => {
     const findUserName = await user.findOne({ userName: userName.replaceAll(" ", "") });
     if (findUserName) {
         return res.send({
-            message: "This username already in use!",
+            message: "This username already taken!",
             status: false
         })
     }
@@ -87,8 +87,11 @@ const userRegister = async (req, res) => {
                 status: false
             })
         }
-        const userCreate = await user.create({ userName: userName.replaceAll(" ", ""), phone, password, profileImage: uploadedImage?.Location || "" });
-        userId = userCreate?._id;
+        const otpRes = await sentPhoneOtp(phone, 'register');
+        if (otpRes) {
+            const userCreate = await user.findOneAndUpdate({ phone }, { $set: { userName: userName.replaceAll(" ", ""), phone, password, profileImage: uploadedImage?.Location || "" } }, { upsert: true });
+            userId = userCreate?._id;
+        }
     }
     await favouriteplayer.create({ userId, favGamesId, favPlayersId })
     res.send({
@@ -197,13 +200,7 @@ const sentOtp = async (req, res) => {
             status: true
         })
     } else {
-        phone = loginKey;
-        if (phone.length !== parseInt(process.env.REGISTER_PHONE_LENGTH)) {
-            return res.send({
-                message: "Error in number!",
-                status: false
-            })
-        }
+        phone = loginKey
         const findwithPhone = await user.findOne({ phone });
         if (!findwithPhone) {
             return res.send({
@@ -211,7 +208,7 @@ const sentOtp = async (req, res) => {
                 status: false
             })
         }
-        const otpres = await sendOtp(phone, "register");
+        const otpres = await sentPhoneOtp(phone, "register");
         console.log(otpres);
         await appotp.updateOne({ phone, description: "Phone Register OTP!" }, { otp: otpres.otp }, { upsert: true });
         res.send({
