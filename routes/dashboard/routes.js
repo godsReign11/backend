@@ -24,5 +24,7 @@ router.get('/getBanner', bannerController.getBanner)
 
 router.get('/getUsers',userController.getUsers)
 
+router.get('/getBannerStatus',bannerController.getBannerStatus)
+
 
 module.exports = router;
