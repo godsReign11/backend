@@ -1,5 +1,6 @@
 const downloads = require('../../models/app/download')
 const watchlist = require('../../models/app/watchlist')
+const objectId = require('mongoose').Types.ObjectId
 
 var storeUserDownloads = async function(req,res)
 {
@@ -13,7 +14,7 @@ var storeUserDownloads = async function(req,res)
 
 var getUserDownloads = async function(req,res)
 {
-    const getData = await downloads.find({userId:req.query.userId,isDeleted:false});
+    const getData = await downloads.find({userId:new objectId(req.query.userId),isDeleted:false});
     return res.send({
         status:true,
         message:"success",
@@ -33,7 +34,7 @@ const storeUserWatchlist = async function(req,res)
 
 var getUserWatchlist = async function(req,res)
 {
-    const getData = await watchlist.find({userId:req.query.userId,isDeleted:false});
+    const getData = await watchlist.find({userId:new objectId(req.query.userId),isDeleted:false});
     return res.send({
         status:true,
         message:"success",

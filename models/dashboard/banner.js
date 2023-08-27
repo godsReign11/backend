@@ -9,6 +9,18 @@ const bannerListSchema = new schema({
     videoUrl:{
         type:String
     },
+    videoId:{
+         type:String
+    },
+    videoTitle:{
+       type:String
+    },
+    videoDescription:{
+        type:String
+     },
+    videoLanguage:{
+          type:String
+    },
     title:{
         type:String
     },
