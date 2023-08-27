@@ -170,7 +170,7 @@ const passwordLogin = async (req, res) => {
 }
 
 const sentOtp = async (req, res) => {
-    const { loginKey } = req.body;
+    const { loginKey, type } = req.body;
     if (!loginKey) {
         return res.send({
             message: "Please provide a key to login with!",
@@ -208,9 +208,7 @@ const sentOtp = async (req, res) => {
                 status: false
             })
         }
-        const otpres = await sentPhoneOtp(phone, "register");
-        console.log(otpres);
-        await appotp.updateOne({ phone, description: "Phone Register OTP!" }, { otp: otpres.otp }, { upsert: true });
+        await sentPhoneOtp(phone, type);
         res.send({
             message: `OTP sent to your phone, Please check!`,
             status: true
@@ -280,7 +278,14 @@ const verifyOtp = async (req, res) => {
                 status: false
             })
         }
-        const phoneOtp = await appotp.findOne({ phone, description: "Phone Register OTP!" });
+        let phoneOtp;
+        if (verifyType === "register") {
+            phoneOtp = await appotp.findOne({ phone, description: "Phone Register OTP!" });
+        } else if (verifyType === "login") {
+            phoneOtp = await appotp.findOne({ phone, description: "Phone Login OTP!" });
+        } else if (verifyType === "forgot") {
+            phoneOtp = await appotp.findOne({ phone, description: "Phone ForgotPassword OTP!" });
+        }
         if (!phoneOtp) {
             return res.send({
                 message: "Invalid OTP!",
@@ -301,7 +306,7 @@ const verifyOtp = async (req, res) => {
     res.send({
         message: "User OTP Verified!",
         status: true
-    })
+    });
 }
 
 const forgotPassword = async (req, res) => {
@@ -436,49 +441,6 @@ const resetPassword = async (req, res) => {
     })
 }
 
-const sendOtpPhoneNumber = async (email) => {
-    var otp = 123456;
-    console.log("inside")
-    var email = `91${email}`;
-    const http = require('https');
-    const options = {
-        method: 'GET',
-        hostname: 'api.msg91.com',
-        port: null,
-        path: `/api/v5/otp?template_id=64c258bed6fc0509641d2913&mobile=918006387557&authkey=401846AEjwSihvV64e4ed4dP1&otp=${otp}`,
-        // 387507A1tInncp6421da8bP1,
-        // 64536453d6fc0503793d99c3
-        headers: {
-            'Content-Type': 'application/JSON',
-        },
-    };
-    const req = http.request(options, (res) => {
-        const chunks = [];
-        res.on('data', (chunk) => {
-            chunks.push(chunk);
-        });
-        res.on('end', () => {
-            const body = Buffer.concat(chunks);
-            console.log(body)
-        });
-    });
-    req.write('{\n  "Param1": "value1",\n  "Param2": "value2",\n  "Param3": "value3"\n}');
-    req.end();
-    return ({
-        status: true,
-        otp,
-    });
-};
-
-const otp = async (req, res) => {
-    const { p } = '7310042077';
-    const ab = await sendOtpPhoneNumber(p);
-    console.log(ab)
-    res.send("OTP SENT.");
-}
-
-
-
 module.exports = {
-    userRegister, passwordLogin, sentOtp, verifyOtp, forgotPassword, resetPassword, otp
+    userRegister, passwordLogin, sentOtp, verifyOtp, forgotPassword, resetPassword
 }

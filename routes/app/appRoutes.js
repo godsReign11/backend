@@ -12,7 +12,7 @@ router.post('/sentOtp', userController.sentOtp);
 router.post('/verifyOtp', userController.verifyOtp);
 router.post('/forgotPassword', userController.forgotPassword);
 router.post('/resetPassword', userController.resetPassword);
-router.get('/otp', userController.otp);
+// router.get('/otp', userController.otp);
 router.post('/storeUserDownloads',userActivityController.storeUserDownloads);
 router.get('/getUserDownloads',userActivityController.getUserDownloads)
 router.post('/storeUserWatchlist',userActivityController.storeUserWatchlist);
