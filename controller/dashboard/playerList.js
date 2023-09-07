@@ -39,7 +39,7 @@ const createPlayer =async function(req,res)
 
 const getPlayerAll =async function(req,res)
 {
-    var data =await playerList.find();
+    var data =await playerList.find().lean();
     if(data==null)
     {
         return res.send({
